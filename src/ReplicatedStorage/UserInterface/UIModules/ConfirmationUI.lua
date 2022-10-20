@@ -26,7 +26,11 @@ function ConfirmationUI.Init(UI, Args)
          UIController:UnloadUI("ConfirmationUI")
         Spring.target(Camera, 1, 4, { FieldOfView = 70 })
          UIController:RemoveBlackout()
-         Args.YesFunction()
+         if Args.YesFunction then
+            Args.YesFunction()
+         else
+            print("No YesFunction")
+         end
     end)
 
     NoButton.MouseButton1Click:Connect(function()

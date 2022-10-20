@@ -1,6 +1,7 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local SoundService = game:GetService("SoundService")
+local TweenService = game:GetService("TweenService")
 local Knit = require(ReplicatedStorage.Packages.Knit)
 
 local UI_MODULES = script.Parent.UIModules
@@ -9,10 +10,20 @@ local Spring = require(script.Parent.Spring)
 
 local UIController = Knit.CreateController { Name = "UIController" }
 local DataService
+local UIService
 
 function UIController:KnitStart()
     self:LoadEssentialUI()
     DataService = Knit.GetService("DataService")
+    UIService = Knit.GetService("UIService")
+
+    UIService.InitConfirmation:Connect(function(Args)
+        self:InitConfirmation(Args)
+    end)
+
+    UIService.SendNotification:Connect(function(Args)
+        self:SendNotification(Args)
+    end)
 end
 
 function UIController:LoadUI(UI_NAME: string, AdditionalArgs: table)
@@ -201,23 +212,52 @@ function UIController:LoadUX(UI_OBJECT)
     end
 end
 
+function UIController:SendNotification(Args)
+    local Notifications = self:findUIInPlayer("Notifications")
+    local Frame = Notifications.Frame
+    local NotificationTemplate = Notifications.Templates.Notification
+
+    local Notification = NotificationTemplate:Clone()
+    Notification.Text.Text = Args.Text
+    Notification.Parent = Frame
+
+    local Tween = TweenService:Create(
+    Notification.Timer,
+    TweenInfo.new(
+        3, Enum.EasingStyle.Sine,
+        Enum.EasingDirection.InOut,
+        0,
+        false,
+        0
+    ),
+    { Size = UDim2.fromScale(0, 0.05) } )
+
+    Tween:Play()
+
+    Tween.Completed:Connect(function(playbackState)
+        if playbackState == Enum.PlaybackState.Completed and Notification then
+            Notification:Destroy()
+        end
+    end)
+
+    Notification.Close.MouseButton1Click:Connect(function()
+        if Tween then
+            Tween:Cancel()
+            Tween:Destroy()
+        end
+
+        Notification:Destroy()
+        Notification = nil
+    end)
+end
+
 function UIController:LoadEssentialUI()
     repeat
         task.wait()
     until Players.LocalPlayer.PlayerGui
 
+    self:LoadUI("Notifications")
     self:LoadUI("Blackout")
-
-    -- task.delay(5, function()
-    --     print("loading UI")
-    --     self:InitConfirmation({
-    --         Text = "Welcome to the game! You have",
-    --         YesFunction = function()
-    --             print("HE PRESSED IT YES!")
-    --         end
-    --     })
-    -- end)
-    -- Confirmation Test
 end
 
 return UIController

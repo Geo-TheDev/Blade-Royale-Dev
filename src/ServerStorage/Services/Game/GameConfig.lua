@@ -1,0 +1,4 @@
+return {
+    INTERMISSION_LENGTH = 5;
+    ROUND_LENGTH = 10;
+}
