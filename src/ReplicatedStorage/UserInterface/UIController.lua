@@ -24,6 +24,10 @@ function UIController:KnitStart()
     UIService.SendNotification:Connect(function(Args)
         self:SendNotification(Args)
     end)
+
+    UIService.LoadEssentialUI:Connect(function()
+        self:LoadEssentialUI()
+    end)
 end
 
 function UIController:LoadUI(UI_NAME: string, AdditionalArgs: table)
@@ -236,7 +240,13 @@ function UIController:SendNotification(Args)
 
     Tween.Completed:Connect(function(playbackState)
         if playbackState == Enum.PlaybackState.Completed and Notification then
-            Notification:Destroy()
+            local newTween = TweenService:Create(Notification, TweenInfo.new(0.5, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, 0, false, 0), { GroupTransparency = 1 })
+            newTween:Play()
+            newTween.Completed:Connect(function()
+                newTween:Destroy()
+                newTween = nil
+                Notification:Destroy()
+            end)
         end
     end)
 
@@ -246,8 +256,14 @@ function UIController:SendNotification(Args)
             Tween:Destroy()
         end
 
-        Notification:Destroy()
-        Notification = nil
+        local newTween = TweenService:Create(Notification, TweenInfo.new(0.5, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, 0, false, 0), { GroupTransparency = 1 })
+        newTween:Play()
+        newTween.Completed:Connect(function()
+            newTween:Destroy()
+            newTween = nil
+            Notification:Destroy()
+            Notification = nil
+        end)
     end)
 end
 

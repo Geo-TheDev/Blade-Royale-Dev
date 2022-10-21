@@ -1,4 +1,4 @@
 return {
-    INTERMISSION_LENGTH = 5;
+    INTERMISSION_LENGTH = 10;
     ROUND_LENGTH = 10;
 }

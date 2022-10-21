@@ -1,36 +1,58 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local ServerStorage = game:GetService("ServerStorage")
 local Knit = require(ReplicatedStorage.Packages.Knit)
-
-local SwordsFolder = ServerStorage:WaitForChild("Items")
 
 local PlayerService = Knit.CreateService {
     Name = "PlayerService",
     Client = {},
 }
 
-function PlayerJoined(player: Player)
-    local DataService = Knit.GetService("DataService")
-    player.CharacterAdded:Connect(CharacterAdded)
-end
-
-function CharacterAdded(Character: Model)
-    local player = Players:GetPlayerFromCharacter(Character)
-    local DataService = Knit.GetService("DataService")
-    local PlayerData = DataService:Get(player)
-    
-    repeat
-        PlayerData = DataService:Get(player)
-        task.wait()
-    until PlayerData ~= nil
-
-    local Sword = SwordsFolder:FindFirstChild(PlayerData.Equiped_Sword):Clone()
-    Sword.Parent = player.Backpack
-end
 
 function PlayerService:KnitStart()
-    Players.PlayerAdded:Connect(PlayerJoined)
+    local GameSevice = Knit.GetService("GameService")
+    local UIService =  Knit.GetService("UIService")
+
+    Players.PlayerAdded:Connect(function(player)
+        player:SetAttribute("InBattle", false)
+        player:GetAttributeChangedSignal("InBattle"):Connect(function()
+            local att = player:GetAttribute("InBattle")
+            if att == false then
+                if player.Backpack:FindFirstChildWhichIsA("Tool") then
+                    player.Backpack:FindFirstChildWhichIsA("Tool"):Destroy()
+                elseif player.Character:FindFirstChildWhichIsA("Tool") then
+                    player.Character:FindFirstChildWhichIsA("Tool"):Destroy()
+                end
+            elseif att == true then
+                GameSevice:GivePlayerSword(player)
+            end
+        end)
+
+        player.CharacterAdded:Connect(function()
+            UIService:LoadEssentialUI(player)
+        end)
+    end)
+end
+
+function PlayerService:ChangeBattleState(player, state, SendNotification)
+    local UIService = Knit.GetService("UIService")
+
+    player:SetAttribute("InBattle", state)
+
+    if state == true and SendNotification then
+        UIService:SendNotification(
+            player,
+            {
+                Text = "PVP Has been turned on!";
+            }
+        )
+    elseif state == false and SendNotification then
+        UIService:SendNotification(
+            player,
+            {
+                Text = "PVP Has been turned off!";
+            }
+        )
+    end
 end
 
 return PlayerService

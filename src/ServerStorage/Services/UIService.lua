@@ -6,6 +6,7 @@ local UIService = Knit.CreateService {
     Client = {
         InitConfirmation = Knit.CreateSignal(),
         SendNotification = Knit.CreateSignal(),
+        LoadEssentialUI = Knit.CreateSignal(),
     },
 }
 
@@ -15,6 +16,10 @@ end
 
 function UIService:SendNotification(Player: Player, Args)
     self.Client.SendNotification:Fire(Player, Args)
+end
+
+function UIService:LoadEssentialUI(Player: Player)
+    self.Client.LoadEssentialUI:Fire(Player)
 end
 
 function UIService:KnitStart()
