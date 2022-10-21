@@ -31,17 +31,17 @@ end
 
 function GameService:StartGame()
     local TimerService = Knit.GetService("TimerService")
-    
+
     while self:CheckForPlayers() == true do
         for _, Player: Player in pairs(Players:GetChildren()) do
             self:SendNotification(Player, "Intermission Started!")
         end
-
+        TimerService:Stop()
         self.Timer = TimerService:CreateTimer(
             {
-                Length = self.Round_Length,
+                Length = self.Intermission_Length,
                 Callback = function()
-                    print("THE TIMER WORKS!")
+                    print("Intermission Complete!")
                 end,
                 ShowGUI = true,
             })
@@ -69,11 +69,12 @@ end
 function GameService:StartRound()
     local PlayerService = Knit.GetService("PlayerService")
     local TimerService = Knit.GetService("TimerService")
+    TimerService:Stop()
     self.Timer = TimerService:CreateTimer(
         {
             Length = self.Round_Length,
             Callback = function()
-                print("THE TIMER WORKS!")
+                print("Round complete!")
             end,
             ShowGUI = true,
         })

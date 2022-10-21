@@ -6,6 +6,7 @@ local Knit = require(ReplicatedStorage.Packages.Knit)
 local TimerService = Knit.CreateService {
     Name = "TimerService",
     Client = {},
+    State = false,
 }
 
 function TimerService:CreateTimer(Args)
@@ -29,6 +30,7 @@ function TimerService:CreateTimer(Args)
             self.Connection:Disconnect()
         end
     end)
+
 end
 
 function TimerService:ToMinutes(num)
@@ -44,8 +46,10 @@ function TimerService:ToMinutes(num)
 end
 
 function TimerService:Stop()
-    self.Connection:Disconnect()
-    print("Stopped Timer!")
+    if self.Connection then        
+        self.Connection:Disconnect()
+        print("Stopped Timer!")
+    end
 end
 
 return TimerService
