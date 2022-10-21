@@ -1,5 +1,6 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
 local SoundService = game:GetService("SoundService")
 local TweenService = game:GetService("TweenService")
 local Knit = require(ReplicatedStorage.Packages.Knit)
@@ -27,6 +28,14 @@ function UIController:KnitStart()
 
     UIService.LoadEssentialUI:Connect(function()
         self:LoadEssentialUI()
+    end)
+
+    UIService.UpdateTimer:Connect(function()
+        self:UpdateTimer()
+    end)
+
+    UIService.StopTimer:Connect(function()
+        self:StopTimer()
     end)
 end
 
@@ -267,6 +276,25 @@ function UIController:SendNotification(Args)
     end)
 end
 
+function UIController:UpdateTimer()
+    local TimerUI = self:findUIInPlayer("Timer")
+    local TimerText = TimerUI.Frame.Time
+
+    self.Timer = RunService.Heartbeat:Connect(function()
+        TimerText.Text = ReplicatedStorage.TimerValue.Value
+    end)
+end
+
+function UIController:StopTimer()
+    local TimerUI = self:findUIInPlayer("Timer")
+    local TimerText = TimerUI.Frame.Time
+
+    if self.Timer then
+        self.Timer:Disconnect()
+        TimerText.Text = ""
+    end
+end
+
 function UIController:LoadEssentialUI()
     repeat
         task.wait()
@@ -274,6 +302,7 @@ function UIController:LoadEssentialUI()
 
     self:LoadUI("Notifications")
     self:LoadUI("Blackout")
+    self:LoadUI("Timer")
 end
 
 return UIController

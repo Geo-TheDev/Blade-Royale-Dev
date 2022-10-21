@@ -34,24 +34,14 @@ function PlayerService:KnitStart()
 end
 
 function PlayerService:ChangeBattleState(player, state, SendNotification)
-    local UIService = Knit.GetService("UIService")
+    local GameService = Knit.GetService("GameService")
 
     player:SetAttribute("InBattle", state)
 
     if state == true and SendNotification then
-        UIService:SendNotification(
-            player,
-            {
-                Text = "PVP Has been turned on!";
-            }
-        )
+        GameService:SendNotification(player, "PVP Has been turned on!")
     elseif state == false and SendNotification then
-        UIService:SendNotification(
-            player,
-            {
-                Text = "PVP Has been turned off!";
-            }
-        )
+        GameService:SendNotification(player, "PVP Has been turned off!")
     end
 end
 

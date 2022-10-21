@@ -7,6 +7,8 @@ local UIService = Knit.CreateService {
         InitConfirmation = Knit.CreateSignal(),
         SendNotification = Knit.CreateSignal(),
         LoadEssentialUI = Knit.CreateSignal(),
+        UpdateTimer = Knit.CreateSignal(),
+        StopTimer = Knit.CreateSignal(),
     },
 }
 
@@ -20,6 +22,14 @@ end
 
 function UIService:LoadEssentialUI(Player: Player)
     self.Client.LoadEssentialUI:Fire(Player)
+end
+
+function UIService:UpdateTimer(Player: Player, Time: number)
+    self.Client.UpdateTimer:Fire(Player, {CurrentTime = Time})
+end
+
+function UIService:StopTimer(Player: Player, Time: number)
+    self.Client.StopTimer:Fire(Player, {CurrentTime = Time})
 end
 
 function UIService:KnitStart()

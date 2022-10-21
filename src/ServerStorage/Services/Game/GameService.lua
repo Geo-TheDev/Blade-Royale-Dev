@@ -9,6 +9,7 @@ local GameService = Knit.CreateService {
     Client = {},
     Round_Length = Config.ROUND_LENGTH,
     Intermission_Length = Config.INTERMISSION_LENGTH,
+    Players = {},
 }
 
 function GameService:CheckForPlayers()
@@ -29,47 +30,36 @@ function GameService:KnitStart()
 end
 
 function GameService:StartGame()
-    local UIService = Knit.GetService("UIService")
-
+    local TimerService = Knit.GetService("TimerService")
+    
     while self:CheckForPlayers() == true do
         for _, Player: Player in pairs(Players:GetChildren()) do
-            UIService:SendNotification(
-                Player,
-                {
-                    Text = "Intermission Started!";
-                }
-            )
+            self:SendNotification(Player, "Intermission Started!")
         end
+
+        self.Timer = TimerService:CreateTimer(
+            {
+                Length = self.Round_Length,
+                Callback = function()
+                    print("THE TIMER WORKS!")
+                end,
+                ShowGUI = true,
+            })
 
         task.wait(self.Intermission_Length)
         for _, Player: Player in pairs(Players:GetChildren()) do
-            UIService:SendNotification(
-                Player,
-                {
-                    Text = "Intermission Ended!";
-                }
-            )
+            self:SendNotification(Player, "Intermission Ended!")
         end
 
         self:StartRound()
 
         for _, Player: Player in pairs(Players:GetChildren()) do
-            UIService:SendNotification(
-                Player, 
-                {
-                    Text = "Round Started!";
-                }
-            )
+            self:SendNotification(Player, "Round Started!")
         end
 
         task.wait(self.Round_Length)
         for _, Player: Player in pairs(Players:GetChildren()) do
-            UIService:SendNotification(
-                Player, 
-                {
-                    Text = "Round Ended!";
-                }
-            )
+            self:SendNotification(Player, "Round Ended!")
         end
 
         self:EndRound()
@@ -78,7 +68,16 @@ end
 
 function GameService:StartRound()
     local PlayerService = Knit.GetService("PlayerService")
-    
+    local TimerService = Knit.GetService("TimerService")
+    self.Timer = TimerService:CreateTimer(
+        {
+            Length = self.Round_Length,
+            Callback = function()
+                print("THE TIMER WORKS!")
+            end,
+            ShowGUI = true,
+        })
+
     for _, Player: Player in pairs(Players:GetChildren()) do
         PlayerService:ChangeBattleState(Player, false, true)
     end
@@ -132,6 +131,17 @@ function GameService:GivePlayerSword(Player: Player)
     else
         warn("PlayerData Returned nil")
     end
+end
+
+function GameService:SendNotification(Player: Player, Input: string)
+    local UIService = Knit.GetService("UIService")
+
+    UIService:SendNotification(
+        Player,
+        {
+            Text = Input;
+        }
+    )
 end
 
 return GameService
