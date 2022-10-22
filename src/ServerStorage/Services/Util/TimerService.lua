@@ -16,8 +16,7 @@ function TimerService:CreateTimer(Args)
             UIService:UpdateTimer(v)
         end
     end
-    
-    -- UIService:UpdateTimer(v, self:ToMinutes(math.floor(Args.Length)))
+
     self.Connection = RunService.Stepped:Connect(function(_, step)
         if Args.Length > 0 then
             Args.Length -= step

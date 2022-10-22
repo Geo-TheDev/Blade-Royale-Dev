@@ -1,4 +1,5 @@
 return {
     INTERMISSION_LENGTH = 10;
     ROUND_LENGTH = 10;
+    PLAYERS_TO_START = 2;
 }
